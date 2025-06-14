@@ -1,0 +1,110 @@
+<div class="container">
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner [diameter]="50"></app-loading-spinner>
+  </div>
+
+  <div *ngIf="!loading && !space && spaceId" class="error-message">
+    <p>No se pudo cargar la información del espacio.</p>
+  </div>
+
+  <div *ngIf="!loading && space" class="reservation-form-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Reservar {{ space.name }}</mat-card-title>
+        <mat-card-subtitle>{{ space.location }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <img mat-card-image [src]="space.imageUrl || 'assets/images/space-placeholder.jpg'" [alt]="space.name">
+
+      <mat-card-content>
+        <div class="space-details">
+          <p><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
+          <p><strong>Precio:</strong> {{ space.price | currency:'EUR' }} por hora</p>
+        </div>
+
+        <form [formGroup]="reservationForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha</mat-label>
+              <input matInput [matDatepicker]="picker" [min]="minDate" formControlName="date" (dateChange)="onDateChange()">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="reservationForm.get('date')?.invalid && reservationForm.get('date')?.touched">
+                La fecha es obligatoria
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row time-row">
+            <mat-form-field appearance="outline" class="time-field">
+              <mat-label>Hora de inicio</mat-label>
+              <input matInput type="time" formControlName="startTime" (change)="onTimeChange()">
+              <mat-error *ngIf="reservationForm.get('startTime')?.invalid && reservationForm.get('startTime')?.touched">
+                La hora de inicio es obligatoria
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="time-field">
+              <mat-label>Hora de fin</mat-label>
+              <input matInput type="time" formControlName="endTime" [min]="minEndTime" (change)="onTimeChange()">
+              <mat-error *ngIf="reservationForm.get('endTime')?.invalid && reservationForm.get('endTime')?.touched">
+                La hora de fin es obligatoria
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Número de asistentes</mat-label>
+              <input matInput type="number" formControlName="attendees" min="1" [max]="maxAttendees">
+              <mat-hint>Máximo: {{ maxAttendees }} personas</mat-hint>
+              <mat-error *ngIf="reservationForm.get('attendees')?.hasError('required')">
+                Debe indicar el número de asistentes
+              </mat-error>
+              <mat-error *ngIf="reservationForm.get('attendees')?.hasError('min')">
+                Debe haber al menos 1 asistente
+              </mat-error>
+              <mat-error *ngIf="reservationForm.get('attendees')?.hasError('max')">
+                El número de asistentes no puede superar la capacidad ({{ maxAttendees }})
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Notas adicionales</mat-label>
+              <textarea matInput formControlName="notes" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+        </form>
+        
+        <div class="price-summary" *ngIf="reservationForm.get('startTime')?.value && reservationForm.get('endTime')?.value">
+          <p class="price-label">Precio total estimado:</p>
+          <p class="price-value">{{ totalPrice | currency:'EUR' }}</p>
+        </div>
+
+        <div class="availability-status" *ngIf="availabilityChecked">
+          <p class="available" *ngIf="isAvailable">✅ El espacio está disponible para el horario seleccionado</p>
+          <p class="not-available" *ngIf="!isAvailable">❌ El espacio no está disponible para el horario seleccionado</p>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <div *ngIf="!availabilityChecked || !isAvailable">
+          <button mat-stroked-button color="primary" (click)="checkAvailability()" [disabled]="loading || reservationForm.invalid">
+            Verificar disponibilidad
+          </button>
+        </div>
+        
+        <button mat-raised-button color="accent" (click)="onSubmit()" [disabled]="loading || reservationForm.invalid || !isAvailable">
+          Confirmar Reserva
+        </button>
+        
+        <!-- Botón para confirmación rápida si todo está listo -->
+        <div *ngIf="isAvailable && availabilityChecked" class="success-message">
+          <p>¡Todo listo! Haz clic en "Confirmar Reserva" para finalizar.</p>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

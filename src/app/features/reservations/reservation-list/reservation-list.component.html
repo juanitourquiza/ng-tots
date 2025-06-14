@@ -1,0 +1,106 @@
+<div class="reservation-list-container">
+  <div class="header-actions">
+    <h2>Mis Reservas</h2>
+    <button mat-raised-button color="primary" (click)="createReservation()">
+      <mat-icon>add</mat-icon>
+      Nueva Reserva
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <app-loading-spinner [diameter]="40"></app-loading-spinner>
+  </div>
+
+  <div class="tabs-container" *ngIf="!loading">
+    <mat-tab-group [(selectedIndex)]="activeTabIndex" animationDuration="300ms">
+      <mat-tab label="Próximas">
+        <div class="tab-content" *ngIf="upcomingReservations.length > 0">
+          <div class="reservation-cards">
+            <mat-card class="reservation-card" *ngFor="let reservation of upcomingReservations">
+              <mat-card-header>
+                <div mat-card-avatar class="space-avatar">
+                  <mat-icon>room</mat-icon>
+                </div>
+                <mat-card-title>{{ reservation.space?.name }}</mat-card-title>
+                <mat-card-subtitle>
+                  <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
+                    {{ getStatusLabel(reservation.status) }}
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+              
+              <mat-card-content>
+                <div class="reservation-details">
+                  <p><mat-icon>event</mat-icon> <strong>Fecha:</strong> {{ formatDate(reservation.startTime).split(',')[0] }}</p>
+                  <p><mat-icon>schedule</mat-icon> <strong>Hora:</strong> {{ formatDate(reservation.startTime).split(',')[1] }} - {{ formatDate(reservation.endTime).split(',')[1] }}</p>
+                  <p><mat-icon>people</mat-icon> <strong>Asistentes:</strong> {{ reservation.attendees }}</p>
+                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'EUR' }}</p>
+                  <p *ngIf="reservation.notes"><mat-icon>notes</mat-icon> <strong>Notas:</strong> {{ reservation.notes }}</p>
+                </div>
+              </mat-card-content>
+              
+              <mat-card-actions align="end">
+                <button mat-button color="primary" (click)="editReservation(reservation.id)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+                <button 
+                  mat-button 
+                  color="warn" 
+                  (click)="cancelReservation(reservation.id)" 
+                  *ngIf="canCancelReservation(reservation)"
+                >
+                  <mat-icon>cancel</mat-icon> Cancelar
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="!upcomingReservations.length">
+          <mat-icon>event_busy</mat-icon>
+          <h3>No tienes reservas próximas</h3>
+          <p>Reserva un espacio para tus eventos o reuniones.</p>
+          <button mat-raised-button color="primary" (click)="createReservation()">
+            Realizar una reserva
+          </button>
+        </div>
+      </mat-tab>
+      
+      <mat-tab label="Historial">
+        <div class="tab-content" *ngIf="pastReservations.length > 0">
+          <div class="reservation-cards">
+            <mat-card class="reservation-card past-reservation" *ngFor="let reservation of pastReservations">
+              <mat-card-header>
+                <div mat-card-avatar class="space-avatar">
+                  <mat-icon>room</mat-icon>
+                </div>
+                <mat-card-title>{{ reservation.space?.name }}</mat-card-title>
+                <mat-card-subtitle>
+                  <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
+                    {{ getStatusLabel(reservation.status) }}
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+              
+              <mat-card-content>
+                <div class="reservation-details">
+                  <p><mat-icon>event</mat-icon> <strong>Fecha:</strong> {{ formatDate(reservation.startTime).split(',')[0] }}</p>
+                  <p><mat-icon>schedule</mat-icon> <strong>Hora:</strong> {{ formatDate(reservation.startTime).split(',')[1] }} - {{ formatDate(reservation.endTime).split(',')[1] }}</p>
+                  <p><mat-icon>people</mat-icon> <strong>Asistentes:</strong> {{ reservation.attendees }}</p>
+                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'EUR' }}</p>
+                  <p *ngIf="reservation.notes"><mat-icon>notes</mat-icon> <strong>Notas:</strong> {{ reservation.notes }}</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="!pastReservations.length">
+          <mat-icon>history</mat-icon>
+          <h3>No tienes historial de reservas</h3>
+          <p>Aquí aparecerán tus reservas anteriores.</p>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

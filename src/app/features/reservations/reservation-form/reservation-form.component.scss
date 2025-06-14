@@ -1,0 +1,97 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 50px 0;
+}
+
+.error-message {
+  color: #f44336;
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.reservation-form-container {
+  margin-top: 20px;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
+
+mat-card-content {
+  padding: 16px;
+}
+
+.space-details {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.form-row {
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.time-row {
+  display: flex;
+  gap: 16px;
+  
+  .time-field {
+    flex: 1;
+  }
+}
+
+.price-summary {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .price-label {
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .price-value {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: #2e7d32;
+  }
+}
+
+.availability-status {
+  margin: 20px 0;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+  
+  .available {
+    color: #2e7d32;
+  }
+  
+  .not-available {
+    color: #c62828;
+  }
+}
+
+mat-card-actions {
+  padding: 16px;
+  gap: 10px;
+}

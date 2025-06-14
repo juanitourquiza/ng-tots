@@ -1,0 +1,117 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.error-message {
+  color: #f44336;
+  padding: 20px;
+  text-align: center;
+  font-size: 18px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.back-button {
+  margin-bottom: 20px;
+}
+
+.detail-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.image-container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.space-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+mat-card-header {
+  padding: 16px 16px 0;
+}
+
+mat-card-content {
+  padding: 16px;
+}
+
+.description {
+  margin-bottom: 24px;
+}
+
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  mat-icon {
+    color: #5c6bc0;
+  }
+}
+
+.amenities {
+  margin-bottom: 24px;
+  
+  mat-chip-set {
+    margin-top: 10px;
+  }
+  
+  mat-chip {
+    margin: 4px;
+  }
+}
+
+.availability {
+  margin-bottom: 20px;
+  
+  .time-slots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+mat-card-actions {
+  padding: 8px 16px 16px;
+  display: flex;
+  gap: 10px;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .image-container {
+    height: 250px;
+  }
+}

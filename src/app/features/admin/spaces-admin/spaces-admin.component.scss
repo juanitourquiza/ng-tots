@@ -1,0 +1,92 @@
+.spaces-admin-container {
+  padding: 16px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.filter-container {
+  margin-bottom: 20px;
+  
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  
+  table {
+    width: 100%;
+  }
+  
+  .mat-column-id {
+    width: 5%;
+  }
+  
+  .mat-column-name {
+    width: 20%;
+  }
+  
+  .mat-column-capacity {
+    width: 10%;
+  }
+  
+  .mat-column-price {
+    width: 15%;
+  }
+  
+  .mat-column-location {
+    width: 20%;
+  }
+  
+  .mat-column-isActive {
+    width: 10%;
+  }
+  
+  .mat-column-actions {
+    width: 15%;
+    text-align: right;
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+.no-data {
+  text-align: center;
+  margin: 40px 0;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 16px;
+}

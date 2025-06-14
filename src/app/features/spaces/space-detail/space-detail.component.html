@@ -1,0 +1,74 @@
+<div class="container">
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner [diameter]="50"></app-loading-spinner>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="space && !loading" class="space-detail">
+    <button mat-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Volver a la lista
+    </button>
+
+    <mat-card class="detail-card">
+      <div class="image-container">
+        <img [src]="space.imageUrl || 'assets/images/space-placeholder.jpg'" [alt]="space.name" class="space-image">
+      </div>
+      
+      <mat-card-header>
+        <mat-card-title><h1>{{ space.name }}</h1></mat-card-title>
+        <mat-card-subtitle><h2>{{ space.location }}</h2></mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="description">
+          <h3>Descripción</h3>
+          <p>{{ space.description }}</p>
+        </div>
+        
+        <div class="specs">
+          <div class="spec-item">
+            <mat-icon>group</mat-icon>
+            <span><strong>Capacidad:</strong> {{ space.capacity }} personas</span>
+          </div>
+          
+          <div class="spec-item">
+            <mat-icon>attach_money</mat-icon>
+            <span><strong>Precio:</strong> ${{ space.price }}/hora</span>
+          </div>
+          
+          <div class="spec-item" *ngIf="space.size">
+            <mat-icon>square_foot</mat-icon>
+            <span><strong>Tamaño:</strong> {{ space.size }} m²</span>
+          </div>
+        </div>
+        
+        <div class="amenities" *ngIf="space.amenities && space.amenities.length > 0">
+          <h3>Comodidades</h3>
+          <mat-chip-set>
+            <mat-chip *ngFor="let amenity of space.amenities">{{ amenity }}</mat-chip>
+          </mat-chip-set>
+        </div>
+        
+        <div class="availability" *ngIf="space.availableTimes && space.availableTimes.length > 0">
+          <h3>Horarios Disponibles</h3>
+          <ul class="time-slots">
+            <li *ngFor="let timeSlot of space.availableTimes">{{ timeSlot }}</li>
+          </ul>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions align="end">
+        <button mat-flat-button color="accent" [routerLink]="['/reservations/new', space.id]">
+          <mat-icon>event_available</mat-icon> Reservar Ahora
+        </button>
+        
+        <button mat-stroked-button color="warn" *ngIf="isAdmin()" [routerLink]="['/admin/spaces/edit', space.id]">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

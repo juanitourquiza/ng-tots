@@ -1,0 +1,108 @@
+.reservations-admin-container {
+  padding: 16px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.filters-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  
+  .filter-field {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .status-filter {
+    width: 200px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  
+  table {
+    width: 100%;
+  }
+  
+  .mat-column-id {
+    width: 5%;
+  }
+  
+  .mat-column-space,
+  .mat-column-user {
+    width: 15%;
+  }
+  
+  .mat-column-startTime,
+  .mat-column-endTime {
+    width: 18%;
+  }
+  
+  .mat-column-attendees {
+    width: 10%;
+  }
+  
+  .mat-column-status {
+    width: 10%;
+  }
+  
+  .mat-column-actions {
+    width: 10%;
+    text-align: right;
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.confirmed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.pending {
+    background-color: #fff8e1;
+    color: #f57c00;
+  }
+  
+  &.cancelled {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  &.completed {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+}
+
+.no-data {
+  text-align: center;
+  margin: 40px 0;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 16px;
+}

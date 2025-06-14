@@ -1,0 +1,95 @@
+<div class="profile-container">
+  <div *ngIf="loading" class="loading-spinner-container">
+    <app-loading-spinner [diameter]="50"></app-loading-spinner>
+  </div>
+
+  <div *ngIf="!loading">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Mi Perfil</mat-card-title>
+        <mat-card-subtitle *ngIf="user">{{user.email}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="firstName" placeholder="Nombre">
+              <mat-error *ngIf="profileForm.get('firstName')?.errors?.['required'] && profileForm.get('firstName')?.touched">
+                El nombre es obligatorio
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Apellidos</mat-label>
+              <input matInput formControlName="lastName" placeholder="Apellidos">
+              <mat-error *ngIf="profileForm.get('lastName')?.errors?.['required'] && profileForm.get('lastName')?.touched">
+                Los apellidos son obligatorios
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Correo electrónico</mat-label>
+              <input matInput formControlName="email" placeholder="Correo electrónico">
+              <mat-hint>No puedes cambiar tu correo electrónico</mat-hint>
+            </mat-form-field>
+          </div>
+          
+          <div class="password-section">
+            <div class="section-header">
+              <h3>Cambiar contraseña</h3>
+              <button type="button" mat-icon-button color="primary" (click)="toggleChangePassword()">
+                <mat-icon>{{ changePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            
+            <div *ngIf="changePassword" class="password-fields">
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Contraseña actual</mat-label>
+                  <input matInput type="password" formControlName="currentPassword" placeholder="Contraseña actual">
+                  <mat-error *ngIf="profileForm.get('currentPassword')?.errors?.['required'] && profileForm.get('currentPassword')?.touched">
+                    La contraseña actual es obligatoria
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nueva contraseña</mat-label>
+                  <input matInput type="password" formControlName="newPassword" placeholder="Nueva contraseña">
+                  <mat-error *ngIf="profileForm.get('newPassword')?.errors?.['required'] && profileForm.get('newPassword')?.touched">
+                    La nueva contraseña es obligatoria
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Confirmar nueva contraseña</mat-label>
+                  <input matInput type="password" formControlName="confirmPassword" placeholder="Confirmar nueva contraseña">
+                  <mat-error *ngIf="profileForm.get('confirmPassword')?.errors?.['required'] && profileForm.get('confirmPassword')?.touched">
+                    Confirma la nueva contraseña
+                  </mat-error>
+                  <mat-error *ngIf="profileForm.get('confirmPassword')?.errors?.['mismatch'] && profileForm.get('confirmPassword')?.touched">
+                    Las contraseñas no coinciden
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          
+          <mat-card-actions align="end">
+            <button mat-raised-button type="submit" color="primary" [disabled]="profileForm.invalid && profileForm.touched">
+              Guardar cambios
+            </button>
+          </mat-card-actions>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

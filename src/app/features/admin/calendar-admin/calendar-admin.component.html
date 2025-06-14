@@ -1,0 +1,82 @@
+<div class="calendar-admin-container">
+  <div class="header-actions">
+    <h2>Calendario de Reservas</h2>
+  </div>
+  
+  <div class="filters-container">
+    <form [formGroup]="dateRange" class="date-range-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de inicio</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="start">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de fin</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="end">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="onDateRangeChange()" [disabled]="dateRange.invalid">
+        Aplicar filtro
+      </button>
+    </form>
+  </div>
+  
+  <div class="loading-container" *ngIf="loading">
+    <app-loading-spinner [diameter]="40"></app-loading-spinner>
+  </div>
+  
+  <div class="calendar-container" *ngIf="!loading">
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #4caf50;"></span>
+        <span class="legend-label">Confirmada</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #ff9800;"></span>
+        <span class="legend-label">Pendiente</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #f44336;"></span>
+        <span class="legend-label">Cancelada</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #2196f3;"></span>
+        <span class="legend-label">Completada</span>
+      </div>
+    </div>
+    
+    <!-- Implementación básica de una vista de calendario -->
+    <div class="calendar-view">
+      <div class="reservations-list">
+        <div *ngIf="!reservations.length" class="no-reservations">
+          <p>No hay reservas en el período seleccionado.</p>
+        </div>
+        
+        <mat-card *ngFor="let reservation of reservations" [ngStyle]="{'border-left-color': reservation.color}" class="reservation-card">
+          <mat-card-header>
+            <mat-card-title>{{reservation.title}}</mat-card-title>
+            <mat-card-subtitle>
+              Usuario: {{reservation.user}} | Asistentes: {{reservation.attendees}}
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p><strong>Inicio:</strong> {{reservation.start | date:'dd/MM/yyyy HH:mm'}}</p>
+            <p><strong>Fin:</strong> {{reservation.end | date:'dd/MM/yyyy HH:mm'}}</p>
+            <p><strong>Estado:</strong> 
+              <span [ngClass]="'status-' + reservation.status">
+                {{reservation.status === 'confirmed' ? 'Confirmada' : 
+                  reservation.status === 'pending' ? 'Pendiente' : 
+                  reservation.status === 'cancelled' ? 'Cancelada' : 
+                  reservation.status === 'completed' ? 'Completada' : reservation.status}}
+              </span>
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

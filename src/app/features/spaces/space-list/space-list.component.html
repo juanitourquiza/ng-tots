@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="header">
+    <h1>Espacios Disponibles</h1>
+    <button *ngIf="isAdmin()" mat-raised-button color="primary" routerLink="/spaces/new">
+      <mat-icon>add</mat-icon> Nuevo Espacio
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <app-loading-spinner [diameter]="50"></app-loading-spinner>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && spaces.length === 0" class="empty-message">
+    No hay espacios disponibles.
+  </div>
+
+  <div class="spaces-grid" *ngIf="!loading && spaces.length > 0">
+    <mat-card class="space-card" *ngFor="let space of spaces">
+      <img mat-card-image [src]="space.imageUrl || 'assets/images/space-placeholder.jpg'" [alt]="space.name">
+      <mat-card-header>
+        <mat-card-title>{{ space.name }}</mat-card-title>
+        <mat-card-subtitle>{{ space.location }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="description">{{ space.description }}</p>
+        <div class="details">
+          <p><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
+          <p><strong>Precio:</strong> ${{ space.price }}/hora</p>
+        </div>
+        <div class="amenities">
+          <mat-chip-set>
+            <mat-chip *ngFor="let amenity of space.amenities">{{ amenity }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <!-- Usamos la nueva ruta explícita view -->
+        <a mat-button color="primary" [routerLink]="['/spaces/view', space.id]">
+          <mat-icon>visibility</mat-icon> Ver Detalles
+        </a>
+        <!-- Para reservar usamos una función que valide el ID -->
+        <button mat-button color="accent" (click)="reserve(space)">
+          <mat-icon>event_available</mat-icon> Reservar
+        </button>
+        <!-- Para editar también usamos una función -->
+        <button mat-icon-button color="warn" *ngIf="isAdmin()" (click)="editSpace(space)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
