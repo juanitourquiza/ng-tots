@@ -46,6 +46,8 @@ export class ReservationFormComponent implements OnInit {
   minDate = new Date();
   minEndTime: string = '';
   maxAttendees = 1;
+  isEditMode = false;
+  reservationId: number | null = null;
   
   constructor(
     private formBuilder: FormBuilder,
@@ -59,20 +61,42 @@ export class ReservationFormComponent implements OnInit {
   ngOnInit(): void {
     this.createForm();
     
+    // Determinar si estamos en modo edición o creación basado en la URL
+    const url = this.router.url;
+    this.isEditMode = url.includes('/edit/');
+    console.log('Modo de edición:', this.isEditMode);
+    
     this.route.paramMap.subscribe(params => {
-      // Obtenemos el ID del espacio del parámetro de la ruta
-      const id = params.get('spaceId');
-      console.log('Parámetro recibido:', id);
-      
-      if (id) {
-        this.spaceId = +id;
-        console.log('Space ID configurado:', this.spaceId);
-        this.loadSpaceDetails();
+      if (this.isEditMode) {
+        // Estamos editando una reserva existente
+        const reservationId = params.get('id');
+        console.log('ID de reserva recibido:', reservationId);
         
-        // Automáticamente configuramos la reserva con valores predeterminados
-        setTimeout(() => {
-          this.setupQuickReservation();
-        }, 1000); // Damos tiempo para que se carguen los datos del espacio
+        if (reservationId && reservationId !== 'null' && reservationId !== 'undefined') {
+          this.reservationId = +reservationId;
+          console.log('Intentando cargar reserva con ID:', this.reservationId);
+          // Primero intentamos cargar desde el backend
+          this.loadReservation(this.reservationId);
+        } else {
+          console.log('No se recibió ID válido, intentando con sessionStorage');
+          // Intentar recuperar datos de sessionStorage (para resolver el problema de ID faltante)
+          this.tryLoadFromSessionStorage();
+        }
+      } else {
+        // Estamos creando una nueva reserva
+        const id = params.get('spaceId');
+        console.log('ID de espacio recibido:', id);
+        
+        if (id) {
+          this.spaceId = +id;
+          console.log('Space ID configurado:', this.spaceId);
+          this.loadSpaceDetails();
+          
+          // Automáticamente configuramos la reserva con valores predeterminados
+          setTimeout(() => {
+            this.setupQuickReservation();
+          }, 1000); // Damos tiempo para que se carguen los datos del espacio
+        }
       }
     });
   }
@@ -130,24 +154,139 @@ export class ReservationFormComponent implements OnInit {
   }
   
   loadSpaceDetails(): void {
-    if (!this.spaceId) return;
-    
     this.loading = true;
-    this.spaceService.getSpaceById(this.spaceId).subscribe({
+    this.spaceService.getSpaceById(this.spaceId!).subscribe({
       next: (space) => {
         this.space = space;
         this.maxAttendees = space.capacity;
         this.reservationForm.patchValue({
           spaceId: space.id
         });
-        this.reservationForm.get('attendees')?.setValidators([Validators.required, Validators.min(1), Validators.max(space.capacity)]);
         this.loading = false;
       },
       error: (error) => {
-        this.snackBar.open(error?.message || 'Error al cargar los detalles del espacio', 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Error al cargar los detalles del espacio', 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });
+  }
+  
+  loadReservation(reservationId: number): void {
+    this.loading = true;
+    console.log('Cargando reserva con ID:', reservationId);
+    // Usamos getReservationById para obtener la reserva del backend
+    this.reservationService.getReservationById(reservationId).subscribe({
+      next: (reservation: any) => {
+        console.log('Reserva cargada:', reservation);
+        
+        // Guardar el ID del espacio para cargar sus detalles
+        this.spaceId = reservation.space?.id;
+        if (this.spaceId) {
+          console.log('Cargando detalles del espacio ID:', this.spaceId);
+          this.loadSpaceDetails();
+        } else {
+          console.warn('La reserva no tiene un espacio asociado con ID válido');
+        }
+        
+        // Extraer fecha y horas de las fechas ISO
+        const startDate = new Date(reservation.startTime);
+        const endDate = new Date(reservation.endTime);
+        
+        // Formatear la hora en formato HH:MM
+        const startHour = this.formatTime(startDate.getHours(), startDate.getMinutes());
+        const endHour = this.formatTime(endDate.getHours(), endDate.getMinutes());
+        
+        console.log('Fechas extraídas - Inicio:', startDate, 'Fin:', endDate);
+        console.log('Horas formateadas - Inicio:', startHour, 'Fin:', endHour);
+        
+        // Activar el modo de edición
+        this.availabilityChecked = true;
+        this.isAvailable = true;
+        
+        // Actualizar el formulario con los datos de la reserva
+        this.reservationForm.patchValue({
+          date: startDate,
+          startTime: startHour,
+          endTime: endHour,
+          attendees: reservation.attendees || 1,
+          notes: reservation.notes || '',
+          spaceId: this.spaceId
+        });
+        
+        this.loading = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar la reserva:', error);
+        this.snackBar.open('Error al cargar la reserva', 'Cerrar', { duration: 5000 });
+        this.loading = false;
+        
+        // Si falla la carga, intentar recuperar de sessionStorage
+        this.tryLoadFromSessionStorage();
+      }
+    });
+  }
+  
+  tryLoadFromSessionStorage(): void {
+    const reservationData = sessionStorage.getItem('editReservationData');
+    console.log('Intentando cargar datos desde sessionStorage');
+    
+    if (reservationData) {
+      try {
+        const reservation = JSON.parse(reservationData);
+        console.log('Datos de reserva recuperados de sessionStorage:', reservation);
+        
+        // Mostrar mensaje informativo al usuario
+        this.snackBar.open('Cargando datos de reserva en modo temporal', 'Entendido', { duration: 5000 });
+        
+        // Guardar el ID del espacio para cargar sus detalles
+        this.spaceId = reservation.space?.id;
+        if (this.spaceId) {
+          console.log('Cargando detalles del espacio ID:', this.spaceId);
+          this.loadSpaceDetails();
+        } else {
+          console.warn('No se encontró ID de espacio válido en los datos temporales');
+          this.loading = false;
+          return;
+        }
+        
+        // Extraer fecha y horas de las fechas ISO
+        const startDate = new Date(reservation.startTime);
+        const endDate = new Date(reservation.endTime);
+        
+        // Formatear la hora en formato HH:MM
+        const startHour = this.formatTime(startDate.getHours(), startDate.getMinutes());
+        const endHour = this.formatTime(endDate.getHours(), endDate.getMinutes());
+        
+        console.log('Datos recuperados - Inicio:', startDate, startHour, 'Fin:', endDate, endHour);
+        
+        // Activar el modo de edición
+        this.availabilityChecked = true;
+        this.isAvailable = true;
+        
+        // Actualizar el formulario con los datos de la reserva
+        this.reservationForm.patchValue({
+          date: startDate,
+          startTime: startHour,
+          endTime: endHour,
+          attendees: reservation.attendees || 1,
+          notes: reservation.notes || '',
+          spaceId: this.spaceId
+        });
+        
+        // Limpiar sessionStorage después de usarlo
+        sessionStorage.removeItem('editReservationData');
+      } catch (e) {
+        console.error('Error al procesar datos de sessionStorage:', e);
+      }
+    } else {
+      console.log('No se encontraron datos de reserva en sessionStorage');
+      this.router.navigate(['/reservations']);
+      this.snackBar.open('No se pudo cargar la información de la reserva', 'Cerrar', { duration: 5000 });
+    }
+  }
+  
+  formatTime(hours: number, minutes: number): string {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
   
   checkAvailability(): void {
@@ -183,10 +322,14 @@ export class ReservationFormComponent implements OnInit {
     this.loading = true;
     this.spaceService.getAvailability(this.spaceId, startDate, endDate).subscribe({
       next: (response) => {
+        console.log('Respuesta de disponibilidad:', response);
         this.availabilityChecked = true;
-        this.isAvailable = response.available;
-        if (!response.available) {
-          this.snackBar.open(response.message || 'El espacio no está disponible en el horario seleccionado', 'Cerrar', { duration: 5000 });
+        // Corregido para usar isAvailable en lugar de available
+        this.isAvailable = response.isAvailable;
+        if (!response.isAvailable) {
+          this.snackBar.open('❌ El espacio no está disponible para el horario seleccionado', 'Cerrar', { duration: 5000 });
+        } else {
+          this.snackBar.open('✅ Espacio disponible! Puedes confirmar la reserva.', 'Cerrar', { duration: 5000 });
         }
         this.loading = false;
       },
@@ -216,7 +359,14 @@ export class ReservationFormComponent implements OnInit {
   }
   
   onSubmit(): void {
-    if (this.reservationForm.invalid || !this.availabilityChecked || !this.isAvailable) {
+    if (this.reservationForm.invalid) {
+      this.reservationForm.markAllAsTouched();
+      this.snackBar.open('Por favor complete todos los campos requeridos', 'Cerrar', { duration: 5000 });
+      return;
+    }
+    
+    // Si no estamos en modo edición, verificar disponibilidad
+    if (!this.isEditMode && (!this.availabilityChecked || !this.isAvailable)) {
       if (!this.availabilityChecked) {
         this.snackBar.open('Primero debe verificar la disponibilidad', 'Cerrar', { duration: 5000 });
         return;
@@ -225,8 +375,6 @@ export class ReservationFormComponent implements OnInit {
         this.snackBar.open('El espacio no está disponible en el horario seleccionado', 'Cerrar', { duration: 5000 });
         return;
       }
-      this.reservationForm.markAllAsTouched();
-      return;
     }
     
     const formValue = this.reservationForm.value;
@@ -250,16 +398,57 @@ export class ReservationFormComponent implements OnInit {
     };
     
     this.loading = true;
-    this.reservationService.createReservation(reservationRequest).subscribe({
+    
+    if (this.isEditMode && this.reservationId) {
+      // Actualizar una reserva existente
+      this.reservationService.updateReservation(this.reservationId, reservationRequest).subscribe({
       next: (reservation) => {
-        this.snackBar.open('Reserva creada correctamente', 'Cerrar', { duration: 5000 });
+        this.snackBar.open('Reserva actualizada correctamente', 'Cerrar', { duration: 5000 });
         this.router.navigate(['/reservations']);
       },
       error: (error) => {
-        this.snackBar.open(error?.message || 'Error al crear la reserva', 'Cerrar', { duration: 5000 });
+        console.error('Error al actualizar la reserva:', error);
+        this.snackBar.open(error?.message || 'Error al actualizar la reserva', 'Cerrar', { duration: 5000 });
         this.loading = false;
       }
     });
+    } else {
+      // Crear una nueva reserva
+      this.reservationService.createReservation(reservationRequest).subscribe({
+        next: (reservation) => {
+          console.log('Reserva creada con éxito:', reservation);
+          
+          if (reservation && reservation.id) {
+            console.log('ID asignado por el backend:', reservation.id);
+            
+            // Limpiar cualquier dato temporal en sessionStorage
+            sessionStorage.removeItem('editReservationData');
+            
+            // Guardar la reserva completa con su ID en sessionStorage para referencia
+            // Esto ayuda a manejar el flujo de navegación y garantizar que siempre tengamos el ID
+            sessionStorage.setItem('lastCreatedReservation', JSON.stringify(reservation));
+            
+            // Guardar una bandera para forzar la recarga de reservas al llegar a la lista
+            sessionStorage.setItem('forceReloadReservations', 'true');
+            
+            this.snackBar.open('Reserva creada correctamente con ID: ' + reservation.id, 'Cerrar', { duration: 5000 });
+          } else {
+            console.warn('La reserva fue creada pero sin ID asignado por el backend');
+            this.snackBar.open('Reserva creada, pero podría haber problemas para editarla o cancelarla.', 'Cerrar', { duration: 5000 });
+          }
+          
+          // Redirigir a la lista de reservas y forzar una recarga completa
+          this.router.navigate(['/reservations'], { skipLocationChange: false }).then(() => {
+            console.log('Navegación completada, se debería recargar la lista de reservas');
+          });
+        },
+        error: (error) => {
+          console.error('Error al crear la reserva:', error);
+          this.snackBar.open(error?.error?.message || error?.message || 'Error al crear la reserva', 'Cerrar', { duration: 5000 });
+          this.loading = false;
+        }
+      });
+    }
   }
   
   get totalPrice(): number {

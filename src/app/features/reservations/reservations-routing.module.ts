@@ -8,9 +8,9 @@ const routes: Routes = [
   { path: '', component: ReservationListComponent },
   { path: 'new', component: ReservationFormComponent },
   { path: 'new/:spaceId', component: ReservationFormComponent },
-  { path: ':id', component: ReservationListComponent },
   { path: 'edit/:id', component: ReservationFormComponent },
-  { path: 'calendar', component: ReservationCalendarComponent }
+  { path: 'calendar', component: ReservationCalendarComponent },
+  { path: ':id', component: ReservationListComponent }
 ];
 
 @NgModule({

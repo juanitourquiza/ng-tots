@@ -27,7 +27,9 @@ export interface SpaceFilter {
 
 export interface SpaceAvailability {
   spaceId: number;
-  available: boolean;
+  isAvailable: boolean; // Cambiado de 'available' a 'isAvailable' para coincidir con el backend
+  startTime?: string;
+  endTime?: string;
   conflictingReservations?: number[];
   message?: string;
 }

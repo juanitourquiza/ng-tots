@@ -34,19 +34,19 @@
                   <p><mat-icon>event</mat-icon> <strong>Fecha:</strong> {{ formatDate(reservation.startTime).split(',')[0] }}</p>
                   <p><mat-icon>schedule</mat-icon> <strong>Hora:</strong> {{ formatDate(reservation.startTime).split(',')[1] }} - {{ formatDate(reservation.endTime).split(',')[1] }}</p>
                   <p><mat-icon>people</mat-icon> <strong>Asistentes:</strong> {{ reservation.attendees }}</p>
-                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'EUR' }}</p>
+                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'USD' }}</p>
                   <p *ngIf="reservation.notes"><mat-icon>notes</mat-icon> <strong>Notas:</strong> {{ reservation.notes }}</p>
                 </div>
               </mat-card-content>
               
               <mat-card-actions align="end">
-                <button mat-button color="primary" (click)="editReservation(reservation.id)">
+                <button mat-button color="primary" (click)="editReservation(reservation)">
                   <mat-icon>edit</mat-icon> Editar
                 </button>
                 <button 
                   mat-button 
                   color="warn" 
-                  (click)="cancelReservation(reservation.id)" 
+                  (click)="cancelReservation(getReservationId(reservation))" 
                   *ngIf="canCancelReservation(reservation)"
                 >
                   <mat-icon>cancel</mat-icon> Cancelar
@@ -87,10 +87,16 @@
                   <p><mat-icon>event</mat-icon> <strong>Fecha:</strong> {{ formatDate(reservation.startTime).split(',')[0] }}</p>
                   <p><mat-icon>schedule</mat-icon> <strong>Hora:</strong> {{ formatDate(reservation.startTime).split(',')[1] }} - {{ formatDate(reservation.endTime).split(',')[1] }}</p>
                   <p><mat-icon>people</mat-icon> <strong>Asistentes:</strong> {{ reservation.attendees }}</p>
-                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'EUR' }}</p>
+                  <p><mat-icon>attach_money</mat-icon> <strong>Precio total:</strong> {{ reservation.totalPrice | currency:'USD' }}</p>
                   <p *ngIf="reservation.notes"><mat-icon>notes</mat-icon> <strong>Notas:</strong> {{ reservation.notes }}</p>
                 </div>
               </mat-card-content>
+              
+              <mat-card-actions align="end">
+                <button mat-button color="primary" (click)="editReservation(reservation)">
+                  <mat-icon>edit</mat-icon> Editar
+                </button>
+              </mat-card-actions>
             </mat-card>
           </div>
         </div>

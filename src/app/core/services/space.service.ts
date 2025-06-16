@@ -104,10 +104,13 @@ export class SpaceService {
   }
 
   getAvailability(spaceId: number, startDate: Date, endDate: Date): Observable<SpaceAvailability> {
-    let params = new HttpParams()
-      .set('startTime', startDate.toISOString())
-      .set('endTime', endDate.toISOString());
-      
-    return this.http.get<SpaceAvailability>(`${this.API_URL}/${spaceId}/availability`, { params });
+    // El endpoint espera un POST, no un GET
+    const requestBody = {
+      startTime: startDate.toISOString(),
+      endTime: endDate.toISOString()
+    };
+    
+    console.log('Verificando disponibilidad:', requestBody);
+    return this.http.post<SpaceAvailability>(`${this.API_URL}/${spaceId}/availability`, requestBody);
   }
 }

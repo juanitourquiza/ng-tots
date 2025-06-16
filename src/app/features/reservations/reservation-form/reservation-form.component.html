@@ -19,7 +19,7 @@
       <mat-card-content>
         <div class="space-details">
           <p><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
-          <p><strong>Precio:</strong> {{ space.price | currency:'EUR' }} por hora</p>
+          <p><strong>Precio:</strong> {{ space.price | currency:'USD' }} por hora</p>
         </div>
 
         <form [formGroup]="reservationForm">
@@ -77,10 +77,10 @@
             </mat-form-field>
           </div>
         </form>
-        
+
         <div class="price-summary" *ngIf="reservationForm.get('startTime')?.value && reservationForm.get('endTime')?.value">
           <p class="price-label">Precio total estimado:</p>
-          <p class="price-value">{{ totalPrice | currency:'EUR' }}</p>
+          <p class="price-value">{{ totalPrice | currency:'USD' }}</p>
         </div>
 
         <div class="availability-status" *ngIf="availabilityChecked">
@@ -95,11 +95,11 @@
             Verificar disponibilidad
           </button>
         </div>
-        
+
         <button mat-raised-button color="accent" (click)="onSubmit()" [disabled]="loading || reservationForm.invalid || !isAvailable">
           Confirmar Reserva
         </button>
-        
+
         <!-- Botón para confirmación rápida si todo está listo -->
         <div *ngIf="isAvailable && availabilityChecked" class="success-message">
           <p>¡Todo listo! Haz clic en "Confirmar Reserva" para finalizar.</p>

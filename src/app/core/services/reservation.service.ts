@@ -32,12 +32,14 @@ export class ReservationService {
     return this.http.post<Reservation>(this.API_URL, reservation);
   }
 
-  updateReservation(id: number, reservation: Reservation): Observable<Reservation> {
+  updateReservation(id: number, reservation: ReservationRequest): Observable<Reservation> {
     return this.http.put<Reservation>(`${this.API_URL}/${id}`, reservation);
   }
 
   cancelReservation(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.API_URL}/${id}/cancel`, {});
+    // Asegurar que usamos PUT, no PATCH, para cancelar reservas
+    console.log(`Enviando solicitud PUT a ${this.API_URL}/${id}/cancel`);
+    return this.http.put<void>(`${this.API_URL}/${id}/cancel`, {});
   }
 
   deleteReservation(id: number): Observable<void> {
