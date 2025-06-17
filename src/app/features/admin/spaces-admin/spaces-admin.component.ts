@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 
 // Modelos y servicios
 import { Space } from '../../../core/models/space.model';
@@ -13,6 +14,7 @@ import { SpaceService } from '../../../core/services/space.service';
 // Módulo centralizado de Material e importaciones compartidas
 import { MaterialModule } from '../../../shared/material.module';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-spaces-admin',
@@ -41,7 +43,8 @@ export class SpacesAdminComponent implements OnInit {
   constructor(
     private spaceService: SpaceService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
   
   ngOnInit(): void {
@@ -96,20 +99,32 @@ export class SpacesAdminComponent implements OnInit {
   }
   
   deleteSpace(spaceId: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este espacio? Esta acción no se puede deshacer.')) {
-      this.spaceService.deleteSpace(spaceId).subscribe({
-        next: () => {
-          this.snackBar.open('Espacio eliminado correctamente', 'Cerrar', { duration: 5000 });
-          this.loadSpaces(); // Recargar la lista
-        },
-        error: (error: any) => {
-          let errorMessage = 'Error al eliminar el espacio';
-          if (error.status === 400 && error.error?.message) {
-            errorMessage = error.error.message;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        title: 'Confirmar eliminación',
+        message: '¿Estás seguro de que deseas eliminar este espacio? Esta acción no se puede deshacer.',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.spaceService.deleteSpace(spaceId).subscribe({
+          next: () => {
+            this.snackBar.open('Espacio eliminado correctamente', 'Cerrar', { duration: 5000 });
+            this.loadSpaces(); // Recargar la lista
+          },
+          error: (error: any) => {
+            let errorMessage = 'Error al eliminar el espacio';
+            if (error.status === 400 && error.error?.message) {
+              errorMessage = error.error.message;
+            }
+            this.snackBar.open(errorMessage, 'Cerrar', { duration: 5000 });
           }
-          this.snackBar.open(errorMessage, 'Cerrar', { duration: 5000 });
-        }
-      });
-    }
+        });
+      }
+    });
   }
 }

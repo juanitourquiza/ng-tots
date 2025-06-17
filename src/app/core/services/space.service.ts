@@ -92,7 +92,19 @@ export class SpaceService {
   }
 
   createSpace(space: Space): Observable<Space> {
-    return this.http.post<Space>(this.API_URL, space);
+    // Obtener token manualmente para asegurarnos que se envía correctamente
+    const token = localStorage.getItem('token');
+    
+    // Headers explícitos para esta petición crítica
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    };
+    
+    console.log('Creando espacio con headers:', headers);
+    console.log('Datos del espacio a crear:', space);
+    
+    return this.http.post<Space>(this.API_URL, space, { headers });
   }
 
   updateSpace(id: number, space: Space): Observable<Space> {

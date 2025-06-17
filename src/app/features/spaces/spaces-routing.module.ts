@@ -9,6 +9,10 @@ const routes: Routes = [
   { path: 'admin', component: SpaceAdminComponent },
   // Agregamos una ruta específica para view para asegurarnos que funciona
   { path: 'view/:id', component: SpaceDetailComponent },
+  // Agregamos ruta para edición de espacios
+  { path: 'edit/:id', component: SpaceAdminComponent },
+  // Agregamos ruta para creación de nuevos espacios
+  { path: 'new', component: SpaceAdminComponent },
   // Mantenemos la ruta dinámica para compatibilidad
   { path: ':id', component: SpaceDetailComponent }
 ];

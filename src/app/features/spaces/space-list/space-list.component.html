@@ -20,7 +20,7 @@
 
   <div class="spaces-grid" *ngIf="!loading && spaces.length > 0">
     <mat-card class="space-card" *ngFor="let space of spaces">
-      <img mat-card-image [src]="space.imageUrl || 'assets/images/space-placeholder.jpg'" [alt]="space.name">
+      <img mat-card-image [src]="space.imageUrl || 'https://placehold.co/600x400?text=Imagen+No+Disponible'" [alt]="space.name">
       <mat-card-header>
         <mat-card-title>{{ space.name }}</mat-card-title>
         <mat-card-subtitle>{{ space.location }}</mat-card-subtitle>

@@ -1,0 +1,84 @@
+<div class="space-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode ? 'Editar' : 'Crear' }} Espacio</mat-card-title>
+    </mat-card-header>
+    
+    <div class="loading-container" *ngIf="loading">
+      <app-loading-spinner [diameter]="40"></app-loading-spinner>
+    </div>
+    
+    <mat-card-content *ngIf="!loading">
+      <form [formGroup]="spaceForm" (ngSubmit)="onSubmit()">
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Nombre del espacio">
+            <mat-error *ngIf="spaceForm.get('name')?.hasError('required')">
+              El nombre es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Capacidad</mat-label>
+            <input matInput type="number" formControlName="capacity" placeholder="Personas">
+            <mat-error *ngIf="spaceForm.get('capacity')?.hasError('required')">
+              La capacidad es requerida
+            </mat-error>
+            <mat-error *ngIf="spaceForm.get('capacity')?.hasError('min')">
+              La capacidad debe ser mayor a 0
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Precio por hora</mat-label>
+            <input matInput type="number" formControlName="price" placeholder="USD">
+            <span matPrefix>$&nbsp;</span>
+            <mat-error *ngIf="spaceForm.get('price')?.hasError('required')">
+              El precio es requerido
+            </mat-error>
+            <mat-error *ngIf="spaceForm.get('price')?.hasError('min')">
+              El precio no puede ser negativo
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ubicación</mat-label>
+            <input matInput formControlName="location" placeholder="Ubicación del espacio">
+            <mat-error *ngIf="spaceForm.get('location')?.hasError('required')">
+              La ubicación es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL de la imagen</mat-label>
+            <input matInput formControlName="imageUrl" placeholder="URL de la imagen del espacio">
+            <mat-hint>Ingrese la URL de una imagen para mostrar en el espacio</mat-hint>
+          </mat-form-field>
+        </div>
+        
+        <!-- Solo mostrar toggle de estado activo/inactivo en modo edición -->
+        <div class="form-row status-toggle" *ngIf="isEditMode">
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            {{ spaceForm.get('isActive')?.value ? 'Espacio Activo' : 'Espacio Inactivo' }}
+          </mat-slide-toggle>
+        </div>
+        
+      </form>
+    </mat-card-content>
+    
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="goBack()">Cancelar</button>
+      <button mat-raised-button color="primary" type="button" [disabled]="spaceForm.invalid" (click)="onSubmit()">
+        {{ isEditMode ? 'Actualizar' : 'Crear' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

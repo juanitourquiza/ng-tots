@@ -47,17 +47,22 @@ export class AuthService {
       .pipe(
         tap(response => {
           localStorage.setItem('token', response.token);
+          console.log('Token recibido y guardado:', response.token);
           
           // Crear el objeto user si viene solo el token (esto depende del formato de respuesta del backend)
           let user = response.user;
           if (!user && response.token) {
             const decodedToken = this.jwtHelper.decodeToken(response.token);
+            console.log('Token decodificado:', decodedToken);
+            
             user = {
-              id: decodedToken.userId || decodedToken.id,
-              email: decodedToken.username || decodedToken.email,
+              id: decodedToken.userId || decodedToken.id || decodedToken.sub,
+              email: decodedToken.username || decodedToken.email || decodedToken.sub,
               roles: decodedToken.roles || [],
               token: response.token
             };
+            
+            console.log('Usuario creado desde token:', user);
           }
           
           this.currentUserSubject.next(user);

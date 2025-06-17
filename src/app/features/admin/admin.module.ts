@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SpacesAdminComponent } from './spaces-admin/spaces-admin.component';
+import { SpaceFormComponent } from './spaces-admin/space-form/space-form.component';
 import { ReservationsAdminComponent } from './reservations-admin/reservations-admin.component';
 import { CalendarAdminComponent } from './calendar-admin/calendar-admin.component';
 import { MatTableModule } from '@angular/material/table';
@@ -18,6 +19,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 const routes: Routes = [
   {
@@ -26,6 +30,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'spaces', pathMatch: 'full' },
       { path: 'spaces', component: SpacesAdminComponent },
+      { path: 'spaces/new', component: SpaceFormComponent },
+      { path: 'spaces/edit/:id', component: SpaceFormComponent },
       { path: 'reservations', component: ReservationsAdminComponent },
       { path: 'calendar', component: CalendarAdminComponent },
     ]
@@ -49,10 +55,14 @@ const routes: Routes = [
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatDialogModule,
+    MatSlideToggleModule,
     AdminDashboardComponent,
     SpacesAdminComponent,
+    SpaceFormComponent,
     ReservationsAdminComponent,
     CalendarAdminComponent,
+    ConfirmDialogComponent,
     RouterModule.forChild(routes)
   ]
 })
