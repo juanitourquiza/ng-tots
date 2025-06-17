@@ -94,4 +94,10 @@ mat-form-field {
 mat-card-actions {
   padding: 16px;
   gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  
+  .button-spacer {
+    flex: 1;
+  }
 }

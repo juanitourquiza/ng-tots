@@ -10,6 +10,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
 import { ReservationService } from '../../../core/services/reservation.service';
 import { SpaceService } from '../../../core/services/space.service';
@@ -31,6 +33,8 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     MatSelectModule,
     MatSnackBarModule,
     MatCardModule,
+    MatIconModule,
+    RouterModule,
     LoadingSpinnerComponent
   ],
   templateUrl: './reservation-form.component.html',
