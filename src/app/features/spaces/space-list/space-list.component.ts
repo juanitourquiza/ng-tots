@@ -114,8 +114,9 @@ export class SpaceListComponent implements OnInit {
     try {
       if (space && space.id !== undefined && space.id !== null) {
         const spaceId = space.id.toString();
-        console.log(`Navegando a edición del espacio: ${spaceId}`);
-        this.router.navigateByUrl(`/spaces/edit/${spaceId}`);
+        console.log(`Navegando a edición del espacio en panel admin: ${spaceId}`);
+        // Redirigir a la ruta correcta del admin panel
+        this.router.navigateByUrl(`/admin/spaces/edit/${spaceId}`);
       } else {
         throw new Error('ID de espacio no válido');
       }

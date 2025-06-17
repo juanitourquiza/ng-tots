@@ -6,15 +6,11 @@ import { SpaceAdminComponent } from './space-admin/space-admin.component';
 
 const routes: Routes = [
   { path: '', component: SpaceListComponent },
-  { path: 'admin', component: SpaceAdminComponent },
-  // Agregamos una ruta específica para view para asegurarnos que funciona
+  // Mantenemos solo las rutas para ver detalles
   { path: 'view/:id', component: SpaceDetailComponent },
-  // Agregamos ruta para edición de espacios
-  { path: 'edit/:id', component: SpaceAdminComponent },
-  // Agregamos ruta para creación de nuevos espacios
-  { path: 'new', component: SpaceAdminComponent },
-  // Mantenemos la ruta dinámica para compatibilidad
   { path: ':id', component: SpaceDetailComponent }
+  // Las rutas de edición y creación se manejan en el módulo admin
+  // La ruta /admin/spaces se encarga de la gestión completa
 ];
 
 @NgModule({
