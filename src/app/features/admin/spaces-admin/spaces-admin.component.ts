@@ -53,7 +53,8 @@ export class SpacesAdminComponent implements OnInit {
   
   loadSpaces(): void {
     this.loading = true;
-    this.spaceService.getSpaces().subscribe({
+    // Usamos el nuevo método para obtener TODOS los espacios (activos e inactivos)
+    this.spaceService.getAllSpacesForAdmin().subscribe({
       next: (spaces: Space[]) => {
         this.dataSource = new MatTableDataSource(spaces);
         this.dataSource.paginator = this.paginator;

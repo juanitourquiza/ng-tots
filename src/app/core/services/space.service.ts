@@ -13,6 +13,90 @@ export class SpaceService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Método para parsear adecuadamente el valor isActive desde diferentes formatos
+   * @param value El valor original del backend (puede ser boolean, number, string, etc)
+   * @returns boolean - true si se considera activo, false si no
+   */
+  private parseIsActive(value: any): boolean {
+    console.log('Parseando isActive:', value, 'tipo:', typeof value);
+    
+    // Si es un string, analizamos posibles valores
+    if (typeof value === 'string') {
+      const lowercaseValue = value.toLowerCase();
+      if (lowercaseValue === 'true' || lowercaseValue === '1') return true;
+      if (lowercaseValue === 'false' || lowercaseValue === '0') return false;
+      // Intentar convertir a número
+      const numValue = Number(value);
+      if (!isNaN(numValue)) {
+        return numValue === 1;
+      }
+    }
+    
+    // Para valores booleanos y numéricos
+    if (value === true || value === 1) return true;
+    
+    // Si no coincide con ningún caso activo, consideramos falso
+    return false;
+  }
+
+  // Método específico para el panel de administración - obtiene TODOS los espacios
+  getAllSpacesForAdmin(): Observable<Space[]> {
+    return this.http.get(`${this.API_URL}/admin`, {
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        // Depuración extendida para identificar el problema
+        console.log('[ADMIN] Respuesta del API completa:', response);
+        console.log('[ADMIN] Tipo de respuesta.body:', typeof response.body);
+        
+        // Mostrar los datos crudos
+        if (Array.isArray(response.body)) {
+          console.log('[ADMIN] Primer espacio (raw):', JSON.stringify(response.body[0], null, 2));
+        } else if (response.body && typeof response.body === 'object') {
+          const dataArray = (response.body as any)?.['hydra:member'] || (response.body as any)?.spaces || (response.body as any)?.items || [];
+          if (dataArray.length > 0) {
+            console.log('[ADMIN] Primer espacio (raw):', JSON.stringify(dataArray[0], null, 2));
+          }
+        }
+        
+        // Obtener los datos del body (puede ser un array o estar dentro de alguna propiedad)
+        const data: any = response.body;
+        let spaces = Array.isArray(data) ? data : ((data as any)?.items || (data as any)?.spaces || (data as any)?.['hydra:member'] || []);
+        
+        console.log('[ADMIN] Espacios antes de procesar:', spaces);
+        
+        // Mapear cada espacio para asegurarnos que tenga ID
+        return spaces.map((rawSpace: any) => {
+          // Buscar el ID en diferentes posibles propiedades
+          let spaceId = rawSpace.id || rawSpace._id || rawSpace['@id'] || rawSpace.spaceId;
+          
+          // Si el ID es una URL, extraer el número
+          if (typeof spaceId === 'string' && spaceId.includes('/')) {
+            const parts = spaceId.split('/');
+            spaceId = parts[parts.length - 1]; // Última parte de la URL
+          }
+          
+          // Crear objeto Space compatible
+          const space: Space = {
+            id: typeof spaceId === 'string' ? parseInt(spaceId) : spaceId,
+            name: rawSpace.name || rawSpace.title || '',
+            description: rawSpace.description || '',
+            price: rawSpace.price || 0,
+            capacity: rawSpace.capacity || 0,
+            location: rawSpace.location || '',
+            isActive: this.parseIsActive(rawSpace.isActive), // Procesar con método robusto
+            amenities: rawSpace.amenities || [],
+            imageUrl: rawSpace.imageUrl || rawSpace.image || ''
+          };
+          
+          console.log('[ADMIN] Espacio procesado:', space);
+          return space;
+        });
+      })
+    );
+  }
+  
   getSpaces(filter?: SpaceFilter): Observable<Space[]> {
     let params = new HttpParams();
     
@@ -52,7 +136,7 @@ export class SpaceService {
         
         // Obtener los datos del body (puede ser un array o estar dentro de alguna propiedad)
         const data: any = response.body;
-        let spaces = Array.isArray(data) ? data : (data?.items || data?.spaces || data?.['hydra:member'] || []);
+        let spaces = Array.isArray(data) ? data : ((data as any)?.items || (data as any)?.spaces || (data as any)?.['hydra:member'] || []);
         
         console.log('Espacios antes de procesar:', spaces);
         
@@ -75,7 +159,7 @@ export class SpaceService {
             price: rawSpace.price || 0,
             capacity: rawSpace.capacity || 0,
             location: rawSpace.location || '',
-            isActive: rawSpace.isActive !== false, // Por defecto true
+            isActive: this.parseIsActive(rawSpace.isActive), // Procesar con método robusto
             amenities: rawSpace.amenities || [],
             imageUrl: rawSpace.imageUrl || rawSpace.image || ''
           };

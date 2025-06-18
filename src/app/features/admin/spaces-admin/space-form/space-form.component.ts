@@ -52,6 +52,7 @@ export class SpaceFormComponent implements OnInit {
   private initForm(): void {
     this.spaceForm = this.fb.group({
       name: ['', [Validators.required]],
+      description: ['', [Validators.required]],
       capacity: ['', [Validators.required, Validators.min(1)]],
       price: ['', [Validators.required, Validators.min(0)]],
       location: ['', [Validators.required]],
@@ -66,6 +67,7 @@ export class SpaceFormComponent implements OnInit {
       next: (space) => {
         this.spaceForm.patchValue({
           name: space.name,
+          description: space.description || '',
           capacity: space.capacity,
           price: space.price,
           location: space.location,

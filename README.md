@@ -1,59 +1,105 @@
-# Front
+# TOTS - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Aplicación web para gestión de reservas de espacios desarrollada con Angular 19 y Angular Material.
 
-## Development server
+## Requisitos previos
 
-To start a local development server, run:
+- Node.js (v18.0.0 o superior)
+- NPM (v9.0.0 o superior)
+- Angular CLI (v19.2.11)
+
+## Instalación
+
+1. Clona el repositorio:
+
+```bash
+git clone <url-del-repositorio>
+cd tots/front
+```
+
+2. Instala las dependencias:
+
+```bash
+npm install
+```
+
+3. Inicia el servidor de desarrollo:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+4. Abre tu navegador en `http://localhost:4200/`
 
-## Code scaffolding
+## Estructura del proyecto
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+El proyecto sigue una arquitectura modular con los siguientes directorios principales:
+
+- **app/core**: Servicios, modelos e interceptores globales
+- **app/features**: Módulos funcionales divididos por características (spaces, reservations, admin, auth)
+- **app/shared**: Componentes, directivas y pipes compartidos
+
+## Rutas principales
+
+- `/`: Home - Página principal
+- `/spaces`: Lista de espacios disponibles
+- `/spaces/view/:id`: Detalle de un espacio específico
+- `/reservations/new/:spaceId`: Formulario para crear una nueva reserva
+- `/login`: Página de inicio de sesión
+- `/register`: Página de registro
+
+### Rutas del panel de administración
+
+- `/admin`: Panel de administración (requiere autenticación como admin)
+- `/admin/spaces`: Gestión de espacios
+- `/admin/spaces/new`: Crear un nuevo espacio
+- `/admin/spaces/edit/:id`: Editar un espacio existente
+- `/admin/reservations`: Gestión de reservas
+
+## Librerías principales
+
+- **@angular/core**: Framework Angular (v19.2.0)
+- **@angular/material**: Componentes de UI (v19.2.18)
+- **@angular/forms**: Manejo de formularios reactivos
+- **@angular/router**: Enrutamiento
+- **@angular/cdk**: Kit de desarrollo de componentes
+- **@auth0/angular-jwt**: Manejo de tokens JWT
+- **rxjs**: Programación reactiva
+
+## Características principales
+
+1. **Sistema de autenticación**
+   - Registro de usuarios
+   - Inicio de sesión con JWT
+   - Roles (usuario/administrador)
+
+2. **Gestión de espacios**
+   - Listado con filtros
+   - Visualización detallada
+   - CRUD completo para administradores
+
+3. **Sistema de reservas**
+   - Formulario con validación de disponibilidad
+   - Selección de fecha/hora
+   - Confirmación y pago (simulado)
+
+4. **Panel de administración**
+   - Gestión de espacios
+   - Gestión de reservas
+   - Estadísticas (pendiente de implementación)
+
+## Comunicación con el backend
+
+La aplicación se comunica con una API RESTful en Symfony a través de servicios HTTP. Las principales características son:
+
+- Interceptores para manejar tokens JWT
+- Servicios específicos por entidad (SpaceService, ReservationService, etc.)
+- Manejo de respuestas paginadas y formato Hydra
+
+## Compilación para producción
 
 ```bash
-ng generate component component-name
+ng build --configuration production
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Los archivos de la build estarán disponibles en el directorio `dist/`
